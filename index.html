@@ -39,6 +39,13 @@
     .card-hover:hover {
       transform: translateY(-4px);
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.28s ease-out forwards;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-[#0B1120] dark:text-slate-100 min-h-screen transition-colors duration-200 flex flex-col">
@@ -46,35 +53,57 @@
   <!-- Barra de navegación (30% Azul Confianza) -->
   <header class="sticky top-0 z-40 bg-trust-900 dark:bg-slate-900/95 text-white border-b border-trust-800 dark:border-slate-800 backdrop-blur-md shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-extrabold text-lg shadow-inner">
-          ED
-        </div>
-        <div>
-          <span class="font-extrabold text-lg tracking-tight block leading-none">AplicadoED <span class="text-orange-400">Store</span></span>
-          <span class="text-[11px] text-blue-200 tracking-wide">Ecosistema Offline, STEAM &amp; IoT</span>
-        </div>
+      <div class="flex items-center gap-6">
+        <!-- Marca -->
+        <button onclick="switchView('catalog')" class="flex items-center gap-3 text-left cursor-pointer focus:outline-none">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-extrabold text-lg shadow-inner">
+            ED
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight block leading-none">AplicadoED <span class="text-orange-400">Store</span></span>
+            <span class="text-[11px] text-blue-200 tracking-wide hidden sm:block">Ecosistema Offline, STEAM &amp; IoT</span>
+          </div>
+        </button>
+
+        <!-- Pestañas de Navegación SPA -->
+        <nav class="hidden sm:flex items-center bg-trust-800/80 dark:bg-slate-800 p-1 rounded-xl border border-blue-700/40 dark:border-slate-700">
+          <button
+            id="navCatalogBtn"
+            onclick="switchView('catalog')"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-trust-900 shadow-sm transition cursor-pointer"
+          >
+            Catálogo de Apps
+          </button>
+          <button
+            id="navPricingBtn"
+            onclick="switchView('pricing')"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>Ofertas y Planes</span>
+            <span class="px-1.5 py-0.5 text-[10px] rounded bg-action-600 text-white font-extrabold">-40%</span>
+          </button>
+        </nav>
       </div>
 
-      <!-- Buscador Central -->
-      <div class="hidden md:flex flex-1 max-w-md relative">
+      <!-- Buscador Central (Visible en Catálogo) -->
+      <div id="headerSearchWrapper" class="hidden lg:flex flex-1 max-w-sm relative">
         <svg class="w-4 h-4 text-blue-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
         <input
           id="searchInput"
           type="text"
-          placeholder="Buscar apps, APK, robótica, domótica..."
+          placeholder="Buscar apps, APK, robótica..."
           class="w-full pl-10 pr-4 py-2 rounded-xl bg-trust-800/80 dark:bg-slate-800 text-sm text-white placeholder-blue-300 border border-blue-700/50 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
       </div>
 
       <!-- Controles de Acción -->
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2">
         <button
           id="themeToggle"
           title="Cambiar tema claro/oscuro"
-          class="p-2.5 rounded-xl bg-trust-800 dark:bg-slate-800 hover:bg-blue-700 dark:hover:bg-slate-700 text-blue-100 transition"
+          class="p-2.5 rounded-xl bg-trust-800 dark:bg-slate-800 hover:bg-blue-700 dark:hover:bg-slate-700 text-blue-100 transition cursor-pointer"
         >
           <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -84,10 +113,9 @@
           </svg>
         </button>
 
-        <!-- Botón CTA 10% Naranja Conversión -->
         <button
           onclick="openPublishModal()"
-          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 active:bg-action-700 text-white font-semibold text-sm shadow-md shadow-orange-950/30 transition cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 active:bg-action-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-orange-950/30 transition cursor-pointer"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
@@ -96,119 +124,496 @@
         </button>
       </div>
     </div>
-  </header>
 
-  <!-- Hero Banner (Azul Confianza + Prueba Social UX) -->
-  <section class="bg-gradient-to-br from-trust-900 via-blue-900 to-slate-900 text-white border-b border-blue-800/40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-        <div class="max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-800/70 border border-blue-600/40 text-xs font-medium text-blue-200 mb-4">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Software verificado • Arquitectura resiliente sin dependencia de nube
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
-            Herramientas digitales diseñadas para <span class="text-orange-400">funcionar siempre</span>.
-          </h1>
-          <p class="mt-3 text-blue-100/90 text-base sm:text-lg leading-relaxed">
-            Catálogo oficial de aplicaciones educativas STEAM, redes de comunicación P2P, administración local y automatización domótica desarrolladas por Eliecer García.
-          </p>
-        </div>
-
-        <!-- Métricas de Confianza -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-4 bg-white/5 backdrop-blur-sm border border-white/10 p-4 rounded-2xl shrink-0">
-          <div class="text-center px-2">
-            <div id="statTotalApps" class="text-2xl sm:text-3xl font-extrabold text-white">6</div>
-            <div class="text-xs text-blue-200 mt-0.5">Apps Activas</div>
-          </div>
-          <div class="text-center px-2 border-x border-white/10">
-            <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</div>
-            <div class="text-xs text-blue-200 mt-0.5">Offline Ready</div>
-          </div>
-          <div class="text-center px-2">
-            <div class="text-2xl sm:text-3xl font-extrabold text-orange-400">4.9★</div>
-            <div class="text-xs text-blue-200 mt-0.5">Valoración</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Buscador móvil -->
-      <div class="mt-6 md:hidden relative">
-        <svg class="w-4 h-4 text-blue-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-        <input
-          id="searchInputMobile"
-          type="text"
-          placeholder="Buscar aplicaciones..."
-          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-trust-800/90 text-sm text-white placeholder-blue-300 border border-blue-700/50 focus:outline-none focus:ring-2 focus:ring-orange-400"
-        />
-      </div>
-    </div>
-  </section>
-
-  <!-- Contenido Principal (60% Neutro Respirable) -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-
-    <!-- Filtros por Categoría -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-      <div id="categoryFilters" class="flex flex-wrap gap-2">
-        <button data-cat="Todas" class="cat-btn active px-4 py-2 rounded-xl text-sm font-semibold bg-trust-900 text-white dark:bg-blue-600 shadow-sm transition cursor-pointer">
-          Todas
-        </button>
-        <button data-cat="Educación STEAM" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
-          Educación STEAM
-        </button>
-        <button data-cat="Offline & P2P" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
-          Offline &amp; P2P
-        </button>
-        <button data-cat="Gestión Local" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
-          Gestión Local
-        </button>
-        <button data-cat="Domótica & IoT" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
-          Domótica &amp; IoT
-        </button>
-      </div>
-
-      <div class="text-xs text-slate-500 dark:text-slate-400">
-        Mostrando <span id="visibleCount" class="font-bold text-slate-800 dark:text-slate-200">6</span> aplicaciones disponibles
-      </div>
-    </div>
-
-    <!-- Cuadrícula de Aplicaciones -->
-    <div id="appsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Renderizado dinámicamente por JavaScript -->
-    </div>
-
-    <!-- Estado vacío si no hay resultados -->
-    <div id="emptyState" class="hidden text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-      <div class="text-4xl mb-3">🔍</div>
-      <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">No se encontraron aplicaciones</h3>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Intenta con otro término de búsqueda o cambia la categoría.</p>
-      <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-trust-900 text-white text-sm font-semibold hover:bg-blue-800 transition cursor-pointer">
-        Ver todo el catálogo
+    <!-- Submenú móvil para cambiar entre Catálogo y Ofertas -->
+    <div class="sm:hidden bg-trust-800/90 dark:bg-slate-800/90 px-4 py-2 border-t border-blue-700/40 dark:border-slate-700 flex gap-2">
+      <button
+        id="navCatalogMobileBtn"
+        onclick="switchView('catalog')"
+        class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-trust-900 shadow-sm text-center cursor-pointer"
+      >
+        Catálogo de Apps
+      </button>
+      <button
+        id="navPricingMobileBtn"
+        onclick="switchView('pricing')"
+        class="flex-1 py-1.5 rounded-lg text-xs font-bold text-blue-100 hover:text-white text-center flex items-center justify-center gap-1.5 cursor-pointer"
+      >
+        <span>Ofertas y Planes</span>
+        <span class="px-1.5 py-0.2 text-[10px] rounded bg-action-600 text-white font-extrabold">-40%</span>
       </button>
     </div>
-  </main>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- VISTA 1: CATÁLOGO DE APLICACIONES                                     -->
+  <!-- ===================================================================== -->
+  <div id="catalogView" class="flex-1 flex flex-col">
+    <!-- Hero Banner (Azul Confianza + Prueba Social UX) -->
+    <section class="bg-gradient-to-br from-trust-900 via-blue-900 to-slate-900 text-white border-b border-blue-800/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div class="max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-800/70 border border-blue-600/40 text-xs font-medium text-blue-200 mb-4">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Software verificado • Arquitectura resiliente sin dependencia de nube
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+              Herramientas digitales diseñadas para <span class="text-orange-400">funcionar siempre</span>.
+            </h1>
+            <p class="mt-3 text-blue-100/90 text-base sm:text-lg leading-relaxed">
+              Catálogo oficial de aplicaciones educativas STEAM, redes de comunicación P2P, administración local y automatización domótica desarrolladas por Jesús Eliécer García.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button
+                onclick="switchView('pricing')"
+                class="px-5 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 text-white font-bold text-sm shadow-lg shadow-orange-950/30 transition flex items-center gap-2 cursor-pointer"
+              >
+                <span>Ver Ofertas y Licencias (-40%)</span>
+                <span>→</span>
+              </button>
+              <a
+                href="#catalogoSection"
+                class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition"
+              >
+                Explorar Catálogo
+              </a>
+            </div>
+          </div>
+
+          <!-- Métricas de Confianza -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-4 bg-white/5 backdrop-blur-sm border border-white/10 p-4 rounded-2xl shrink-0">
+            <div class="text-center px-2">
+              <div id="statTotalApps" class="text-2xl sm:text-3xl font-extrabold text-white">6</div>
+              <div class="text-xs text-blue-200 mt-0.5">Apps Activas</div>
+            </div>
+            <div class="text-center px-2 border-x border-white/10">
+              <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</div>
+              <div class="text-xs text-blue-200 mt-0.5">Offline Ready</div>
+            </div>
+            <div class="text-center px-2">
+              <div class="text-2xl sm:text-3xl font-extrabold text-orange-400">4.9★</div>
+              <div class="text-xs text-blue-200 mt-0.5">Valoración</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buscador móvil -->
+        <div class="mt-6 lg:hidden relative">
+          <svg class="w-4 h-4 text-blue-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            id="searchInputMobile"
+            type="text"
+            placeholder="Buscar aplicaciones, APK, domótica..."
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-trust-800/90 text-sm text-white placeholder-blue-300 border border-blue-700/50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido Principal Catálogo -->
+    <main id="catalogoSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+      <!-- Filtros por Categoría -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div id="categoryFilters" class="flex flex-wrap gap-2">
+          <button data-cat="Todas" class="cat-btn active px-4 py-2 rounded-xl text-sm font-semibold bg-trust-900 text-white dark:bg-blue-600 shadow-sm transition cursor-pointer">
+            Todas
+          </button>
+          <button data-cat="Educación STEAM" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+            Educación STEAM
+          </button>
+          <button data-cat="Offline & P2P" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+            Offline &amp; P2P
+          </button>
+          <button data-cat="Gestión Local" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+            Gestión Local
+          </button>
+          <button data-cat="Domótica & IoT" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+            Domótica &amp; IoT
+          </button>
+        </div>
+
+        <div class="text-xs text-slate-500 dark:text-slate-400">
+          Mostrando <span id="visibleCount" class="font-bold text-slate-800 dark:text-slate-200">6</span> aplicaciones disponibles
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Aplicaciones -->
+      <div id="appsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Renderizado dinámicamente -->
+      </div>
+
+      <!-- Estado vacío -->
+      <div id="emptyState" class="hidden text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+        <div class="text-4xl mb-3">🔍</div>
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">No se encontraron aplicaciones</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Intenta con otro término de búsqueda o cambia la categoría.</p>
+        <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-trust-900 text-white text-sm font-semibold hover:bg-blue-800 transition cursor-pointer">
+          Ver todo el catálogo
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VISTA 2: PÁGINA DE OFERTAS DE PRECIO Y PLANES COMERCIALES             -->
+  <!-- ===================================================================== -->
+  <div id="pricingView" class="hidden flex-1 flex-col animate-fadeIn">
+    <!-- Cabecera Página de Precios -->
+    <section class="bg-gradient-to-br from-trust-900 via-blue-900 to-slate-900 text-white border-b border-blue-800/40 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-500/20 border border-orange-400/40 text-xs font-bold text-orange-300 mb-4">
+          <span>🔥</span>
+          <span>OFERTA DE LANZAMIENTO • CUPÓN EXTRA: APLICADO20</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+          Planes transparentes y <span class="text-orange-400">licencias sin ataduras</span>
+        </h1>
+        <p class="mt-3 text-blue-100/90 text-base sm:text-lg">
+          Adquiere paquetes completos para tu institución educativa, condominio o proyecto IoT. Sin pagos mensuales obligatorios ni dependencia de servidores en la nube.
+        </p>
+
+        <!-- Selector Interactivo de Modalidad de Pago -->
+        <div class="mt-8 inline-flex items-center bg-slate-950/50 p-1.5 rounded-2xl border border-blue-700/50">
+          <button
+            id="billingLifetimeBtn"
+            onclick="setBillingCycle('lifetime')"
+            class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-action-600 text-white shadow-md transition cursor-pointer"
+          >
+            Pago Único / Licencia Vitalicia
+          </button>
+          <button
+            id="billingAnnualBtn"
+            onclick="setBillingCycle('annual')"
+            class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>Soporte + Actualizaciones Anual</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">-20% DTO</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Principal de Planes y Ofertas Relámpago -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-16">
+      
+      <!-- 3 TARJETAS DE PLANES PRINCIPALES -->
+      <section>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+          
+          <!-- PLAN 1: Comunidad / Educador -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 flex flex-col justify-between shadow-sm">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950 text-trust-900 dark:text-blue-300">
+                  Open Access
+                </span>
+                <span class="text-2xl">🎓</span>
+              </div>
+              <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-4">Plan Comunidad / Educador</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                Ideal para docentes, estudiantes y entusiastas que desean explorar nuestras herramientas abiertas.
+              </p>
+
+              <div class="my-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-4xl font-extrabold text-slate-900 dark:text-white">$0</span>
+                  <span class="text-sm font-medium text-slate-500">USD / Siempre gratis</span>
+                </div>
+                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">✓ Descarga inmediata sin registro</p>
+              </div>
+
+              <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>Acceso completo a <strong>PLE AplicadoED Hub</strong></span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>Versión comunitaria de <strong>RoboTrack STEAM</strong></span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>Guías PDF de robótica WeDo 2.0 y micro:bit</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>Actualizaciones abiertas en GitHub Pages</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mt-8 pt-4">
+              <button
+                onclick="switchView('catalog')"
+                class="w-full py-3 px-5 rounded-xl bg-trust-900 hover:bg-blue-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-sm transition cursor-pointer"
+              >
+                Explorar Apps Gratuitas
+              </button>
+            </div>
+          </div>
+
+          <!-- PLAN 2: Pack Emprendedor Offline (OFERTA DESTACADA) -->
+          <div class="relative bg-white dark:bg-slate-900 rounded-3xl border-2 border-action-500 p-8 flex flex-col justify-between shadow-2xl shadow-orange-500/10 lg:-translate-y-2">
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-action-600 text-white text-xs font-extrabold uppercase tracking-wider shadow-md">
+              ⭐ Más Popular • Oferta -40%
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-50 dark:bg-orange-950/60 text-action-600 dark:text-orange-400">
+                  Pack Resiliente
+                </span>
+                <span class="text-2xl">🚀</span>
+              </div>
+              <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-4">Pack Emprendedor Offline</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                Solución llave en mano para juntas de condominio, comercios locales y redes comunitarias sin internet.
+              </p>
+
+              <div class="my-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
+                  <span>Precio regular:</span>
+                  <span id="packOldPrice" class="line-through font-semibold">$49 USD</span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                  <span id="packCurrentPrice" class="text-4xl font-extrabold text-slate-900 dark:text-white">$29</span>
+                  <span id="packPeriodLabel" class="text-sm font-medium text-slate-500">USD / Pago único</span>
+                </div>
+                <p class="text-xs text-action-600 dark:text-orange-400 font-semibold mt-1">⚡ Ahorras $20 USD hoy mismo</p>
+              </div>
+
+              <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span><strong>CondoAdmin Local Pro:</strong> gestión ilimitada de apartamentos y cálculo automático de agua/gastos</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span><strong>MeshChat P2P APK:</strong> instalación multidispositivo sin internet</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>Respaldo cifrado y exportación de reportes</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>1 sesión de configuración personalizada remota</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mt-8 pt-4">
+              <button
+                onclick="openCheckoutModal('Pack Emprendedor Offline', getPlanPrice('pack'), getPlanOldPrice('pack'))"
+                class="w-full py-3.5 px-5 rounded-xl bg-action-600 hover:bg-action-500 text-white font-extrabold text-sm shadow-lg shadow-orange-600/25 transition cursor-pointer"
+              >
+                Adquirir Pack Ahora →
+              </button>
+            </div>
+          </div>
+
+          <!-- PLAN 3: Suite Institucional / Domótica Pro -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 flex flex-col justify-between shadow-sm">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950 text-trust-900 dark:text-blue-300">
+                  Colegios &amp; Empresas
+                </span>
+                <span class="text-2xl">🏛️</span>
+              </div>
+              <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-4">Suite Institucional &amp; IoT Pro</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                Licencia completa para laboratorios de robótica escolar, academias STEAM e instalaciones domóticas.
+              </p>
+
+              <div class="my-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
+                  <span>Precio regular:</span>
+                  <span id="suiteOldPrice" class="line-through font-semibold">$120 USD</span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                  <span id="suiteCurrentPrice" class="text-4xl font-extrabold text-slate-900 dark:text-white">$79</span>
+                  <span id="suitePeriodLabel" class="text-sm font-medium text-slate-500">USD / Pago único</span>
+                </div>
+                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">✓ Licencia multiaula hasta 30 equipos</p>
+              </div>
+
+              <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span><strong>Todo el catálogo incluido</strong> (las 6 apps + código fuente)</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span><strong>DomoControl Zigbee/ESP32:</strong> esquemas y firmware</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span><strong>PyGame EduPack APK:</strong> marca blanca con logo de tu colegio</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <span class="text-emerald-500 font-bold">✓</span>
+                  <span>Soporte técnico prioritario directo con el autor</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mt-8 pt-4">
+              <button
+                onclick="openCheckoutModal('Suite Institucional & IoT Pro', getPlanPrice('suite'), getPlanOldPrice('suite'))"
+                class="w-full py-3 px-5 rounded-xl bg-trust-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-bold text-sm transition cursor-pointer"
+              >
+                Solicitar Licencia Institucional
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECCIÓN DE OFERTAS RELÁMPAGO POR APP INDIVIDUAL -->
+      <section class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-action-600 dark:text-orange-400">Promociones Individuales</span>
+            <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">Ofertas Relámpago por Aplicación</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Adquiere licencias individuales con descuento directo y entrega inmediata.</p>
+          </div>
+          <div class="px-4 py-2 rounded-xl bg-orange-50 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800/60 text-xs font-bold text-action-700 dark:text-orange-300">
+            🎟️ Usa el código <span class="underline">APLICADO20</span> para 20% adicional
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Oferta Individual 1 -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🏢</span>
+                <span class="px-2 py-0.5 rounded-md bg-action-600 text-white text-[11px] font-extrabold">-35% DTO</span>
+              </div>
+              <h4 class="font-bold text-slate-900 dark:text-white">CondoAdmin Local Pro</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Licencia vitalicia para administradores y juntas residenciales.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-700">
+              <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-xl font-extrabold text-slate-900 dark:text-white">$19</span>
+                <span class="text-xs text-slate-400 line-through">$29</span>
+                <span class="text-[11px] text-slate-500">USD</span>
+              </div>
+              <button
+                onclick="openCheckoutModal('CondoAdmin Local Pro (Individual)', 19, 29)"
+                class="w-full py-2 rounded-xl bg-action-600 hover:bg-action-500 text-white text-xs font-bold transition cursor-pointer"
+              >
+                Adquirir Oferta
+              </button>
+            </div>
+          </div>
+
+          <!-- Oferta Individual 2 -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">📡</span>
+                <span class="px-2 py-0.5 rounded-md bg-action-600 text-white text-[11px] font-extrabold">-40% DTO</span>
+              </div>
+              <h4 class="font-bold text-slate-900 dark:text-white">MeshChat P2P APK</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Paquete instalador Android + guía de despliegue sin internet.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-700">
+              <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-xl font-extrabold text-slate-900 dark:text-white">$15</span>
+                <span class="text-xs text-slate-400 line-through">$25</span>
+                <span class="text-[11px] text-slate-500">USD</span>
+              </div>
+              <button
+                onclick="openCheckoutModal('MeshChat P2P APK (Individual)', 15, 25)"
+                class="w-full py-2 rounded-xl bg-action-600 hover:bg-action-500 text-white text-xs font-bold transition cursor-pointer"
+              >
+                Adquirir Oferta
+              </button>
+            </div>
+          </div>
+
+          <!-- Oferta Individual 3 -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🤖</span>
+                <span class="px-2 py-0.5 rounded-md bg-action-600 text-white text-[11px] font-extrabold">-30% DTO</span>
+              </div>
+              <h4 class="font-bold text-slate-900 dark:text-white">RoboTrack STEAM Full</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">24 retos guiados por voz para LEGO WeDo 2.0 y micro:bit.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-700">
+              <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-xl font-extrabold text-slate-900 dark:text-white">$24</span>
+                <span class="text-xs text-slate-400 line-through">$35</span>
+                <span class="text-[11px] text-slate-500">USD</span>
+              </div>
+              <button
+                onclick="openCheckoutModal('RoboTrack STEAM Full (Individual)', 24, 35)"
+                class="w-full py-2 rounded-xl bg-action-600 hover:bg-action-500 text-white text-xs font-bold transition cursor-pointer"
+              >
+                Adquirir Oferta
+              </button>
+            </div>
+          </div>
+
+          <!-- Oferta Individual 4 -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🏠</span>
+                <span class="px-2 py-0.5 rounded-md bg-action-600 text-white text-[11px] font-extrabold">-35% DTO</span>
+              </div>
+              <h4 class="font-bold text-slate-900 dark:text-white">DomoControl Zigbee</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Dashboard local + código fuente ESP32 anti-apagones.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-700">
+              <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-xl font-extrabold text-slate-900 dark:text-white">$29</span>
+                <span class="text-xs text-slate-400 line-through">$45</span>
+                <span class="text-[11px] text-slate-500">USD</span>
+              </div>
+              <button
+                onclick="openCheckoutModal('DomoControl Zigbee (Individual)', 29, 45)"
+                class="w-full py-2 rounded-xl bg-action-600 hover:bg-action-500 text-white text-xs font-bold transition cursor-pointer"
+              >
+                Adquirir Oferta
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <!-- Pie de página -->
-  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 mt-12">
+  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
       <div>
         <strong class="text-slate-800 dark:text-slate-200">AplicadoED Store</strong> — Desarrollado por Jesús Eliécer García Hernández
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center gap-4">
+        <button onclick="switchView('pricing')" class="text-action-600 dark:text-orange-400 font-semibold hover:underline cursor-pointer">Ver Ofertas y Planes</button>
+        <span>•</span>
         <a href="mailto:eliexergarcia@gmail.com" class="hover:text-blue-600 dark:hover:text-blue-400 transition">eliexergarcia@gmail.com</a>
         <span>•</span>
-        <button onclick="resetCatalogData()" class="text-xs underline hover:text-orange-600 transition cursor-pointer">Restaurar catálogo base</button>
+        <button onclick="resetCatalogData()" class="text-xs underline hover:text-orange-600 transition cursor-pointer">Restaurar catálogo</button>
       </div>
     </div>
   </footer>
 
-  <!-- MODAL: Ficha Técnica de Aplicación -->
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: FICHA TÉCNICA DE APLICACIÓN                                  -->
+  <!-- ===================================================================== -->
   <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl animate-fadeIn">
-      <div id="modalHeaderBanner" class="h-28 bg-gradient-to-r from-trust-900 to-blue-700 p-6 flex items-end justify-between relative">
+      <div class="h-28 bg-gradient-to-r from-trust-900 to-blue-700 p-6 flex items-end justify-between relative">
         <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition cursor-pointer">
           ✕
         </button>
@@ -247,21 +652,125 @@
         </div>
 
         <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <button onclick="closeDetailModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-            Cerrar
+          <button onclick="closeDetailModal(); switchView('pricing');" class="px-4 py-2.5 rounded-xl border border-orange-200 dark:border-orange-800/60 bg-orange-50 dark:bg-orange-950/40 text-xs font-bold text-action-700 dark:text-orange-300 hover:bg-orange-100 transition cursor-pointer">
+            🏷️ Ver Licencia Pro
           </button>
-          <a id="modalActionBtn" href="#" target="_blank" rel="noopener noreferrer" onclick="registerDownload()" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 text-white font-bold text-sm shadow-lg shadow-orange-600/20 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-            </svg>
-            <span id="modalActionText">Descargar / Abrir App</span>
-          </a>
+          <div class="flex items-center gap-2 ml-auto">
+            <button onclick="closeDetailModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+              Cerrar
+            </button>
+            <a id="modalActionBtn" href="#" target="_blank" rel="noopener noreferrer" onclick="registerDownload()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 text-white font-bold text-sm shadow-lg shadow-orange-600/20 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span>Abrir / Descargar</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Publicar Nueva App -->
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: CHECKOUT Y SOLICITUD DE OFERTA                               -->
+  <!-- ===================================================================== -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-fadeIn">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-lg bg-action-600/15 text-action-600 flex items-center justify-center font-bold">🛒</span>
+          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Resumen de Oferta</h3>
+        </div>
+        <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <div id="checkoutFormState" class="mt-4 space-y-4">
+        <div class="p-4 rounded-2xl bg-trust-50 dark:bg-slate-800/80 border border-blue-100 dark:border-slate-700">
+          <div class="text-xs font-bold text-trust-900 dark:text-blue-400 uppercase tracking-wider">Paquete Seleccionado</div>
+          <div id="checkoutPlanName" class="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">Pack Emprendedor Offline</div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span class="text-xs text-slate-500">Precio con descuento:</span>
+            <div>
+              <span id="checkoutOldPrice" class="text-xs text-slate-400 line-through mr-1.5">$49</span>
+              <span id="checkoutFinalPrice" class="text-2xl font-extrabold text-action-600 dark:text-orange-400">$29 USD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cupón de descuento -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">¿Tienes un cupón promocional?</label>
+          <div class="flex gap-2">
+            <input
+              id="couponInput"
+              type="text"
+              placeholder="Ej: APLICADO20"
+              class="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm uppercase"
+            />
+            <button
+              type="button"
+              onclick="applyCoupon()"
+              class="px-4 py-2 rounded-xl bg-trust-900 hover:bg-blue-800 text-white text-xs font-bold transition cursor-pointer"
+            >
+              Aplicar
+            </button>
+          </div>
+          <p id="couponFeedback" class="text-xs mt-1 hidden"></p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Tu Nombre o Institución *</label>
+          <input id="buyerNameInput" type="text" required placeholder="Ej: Colegio San José / Juan Pérez" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Correo electrónico de entrega *</label>
+          <input id="buyerEmailInput" type="email" required placeholder="tu@correo.com" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" />
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+          <button
+            type="button"
+            onclick="confirmOrderInstant()"
+            class="w-full py-3 rounded-xl bg-action-600 hover:bg-action-500 text-white font-extrabold text-sm shadow-lg shadow-orange-600/20 transition cursor-pointer"
+          >
+            Confirmar Solicitud de Licencia
+          </button>
+          <a
+            id="checkoutMailtoBtn"
+            href="#"
+            class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-center text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          >
+            Enviar orden directa por Correo (mailto)
+          </a>
+        </div>
+      </div>
+
+      <!-- Estado de confirmación instantánea -->
+      <div id="checkoutSuccessState" class="hidden py-6 text-center space-y-3">
+        <div class="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-500 mx-auto flex items-center justify-center text-3xl">
+          ✓
+        </div>
+        <h4 class="text-xl font-extrabold text-slate-900 dark:text-white">¡Orden Registrada con Éxito!</h4>
+        <p id="checkoutSuccessMsg" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Hemos generado tu reserva promocional.
+        </p>
+        <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono text-slate-600 dark:text-slate-300" id="orderReferenceCode">
+          REF: ED-2026-8841
+        </div>
+        <button
+          onclick="closeCheckoutModal()"
+          class="mt-4 w-full py-2.5 rounded-xl bg-trust-900 text-white text-sm font-bold hover:bg-blue-800 transition cursor-pointer"
+        >
+          Volver a la Tienda
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: PUBLICAR NUEVA APP                                           -->
+  <!-- ===================================================================== -->
   <div id="publishModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -320,6 +829,14 @@
     </div>
   </div>
 
+  <!-- TOAST DE NOTIFICACIÓN -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 dark:border-slate-200 flex items-center gap-2.5 text-sm font-semibold">
+      <span class="text-emerald-400 dark:text-emerald-600">✓</span>
+      <span id="toastText">Acción completada</span>
+    </div>
+  </div>
+
   <script>
     // Catálogo base con los proyectos desarrollados
     const DEFAULT_APPS = [
@@ -339,7 +856,7 @@
           "Cálculo automático de alícuotas y distribución mensual",
           "Persistencia segura mediante LocalStorage y respaldo JSON"
         ],
-        url: "https://github.com/aplicadoed-ops"
+        url: "https://aplicadoed-ops.github.io/aplicadoED/"
       },
       {
         id: 2,
@@ -375,7 +892,7 @@
           "Proyectos prácticos con sensores ultrasónicos y motores",
           "Diseñado bajo estándares pedagógicos STEAM"
         ],
-        url: "https://github.com/aplicadoed-ops"
+        url: "https://aplicadoed-ops.github.io/aplicadoED/"
       },
       {
         id: 4,
@@ -415,3 +932,438 @@
       },
       {
         id: 6,
+        icon: "🌐",
+        name: "PLE AplicadoED Hub",
+        category: "Educación STEAM",
+        platform: "Web Portafolio • GitHub Pages",
+        version: "v1.2",
+        rating: "4.9",
+        downloads: 480,
+        badge: "Entorno Personal",
+        description: "Entorno Personal de Aprendizaje (PLE) y vitrina digital de recursos técnicos, diseño instruccional, maquetación web y automatización física.",
+        features: [
+          "Acceso rápido a recursos abiertos y guías técnicas",
+          "Diseño ligero de carga instantánea en conexiones lentas",
+          "Integración directa con repositorios educativos"
+        ],
+        url: "https://aplicadoed-ops.github.io/aplicadoED/"
+      }
+    ];
+
+    const STORAGE_KEY = 'aplicadoed_store_apps_v2';
+    let apps = JSON.parse(localStorage.getItem(STORAGE_KEY)) || DEFAULT_APPS;
+    let currentCategory = 'Todas';
+    let currentSearch = '';
+    let activeAppId = null;
+    let billingCycle = 'lifetime'; // 'lifetime' | 'annual'
+
+    // Estado del Checkout
+    let checkoutState = {
+      planName: '',
+      basePrice: 0,
+      oldPrice: 0,
+      finalPrice: 0,
+      couponApplied: false
+    };
+
+    const appsGrid = document.getElementById('appsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const visibleCount = document.getElementById('visibleCount');
+    const statTotalApps = document.getElementById('statTotalApps');
+
+    // Navegación SPA entre Catálogo y Ofertas de Precios
+    function switchView(view) {
+      const catalogView = document.getElementById('catalogView');
+      const pricingView = document.getElementById('pricingView');
+      const headerSearch = document.getElementById('headerSearchWrapper');
+
+      const navCatalogBtn = document.getElementById('navCatalogBtn');
+      const navPricingBtn = document.getElementById('navPricingBtn');
+      const navCatalogMobile = document.getElementById('navCatalogMobileBtn');
+      const navPricingMobile = document.getElementById('navPricingMobileBtn');
+
+      if (view === 'pricing') {
+        catalogView.classList.add('hidden');
+        pricingView.classList.remove('hidden');
+        pricingView.classList.add('flex');
+        headerSearch.classList.add('lg:hidden');
+
+        // Estilos pestañas activas
+        navPricingBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-trust-900 shadow-sm transition flex items-center gap-1.5 cursor-pointer";
+        navCatalogBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition cursor-pointer";
+
+        navPricingMobile.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-trust-900 shadow-sm text-center flex items-center justify-center gap-1.5 cursor-pointer";
+        navCatalogMobile.className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-blue-100 hover:text-white text-center cursor-pointer";
+      } else {
+        pricingView.classList.add('hidden');
+        pricingView.classList.remove('flex');
+        catalogView.classList.remove('hidden');
+        headerSearch.classList.remove('lg:hidden');
+
+        navCatalogBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-trust-900 shadow-sm transition cursor-pointer";
+        navPricingBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5 cursor-pointer";
+
+        navCatalogMobile.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-trust-900 shadow-sm text-center cursor-pointer";
+        navPricingMobile.className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-blue-100 hover:text-white text-center flex items-center justify-center gap-1.5 cursor-pointer";
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Selector de Ciclo de Facturación en Página de Ofertas
+    function setBillingCycle(cycle) {
+      billingCycle = cycle;
+      const lifetimeBtn = document.getElementById('billingLifetimeBtn');
+      const annualBtn = document.getElementById('billingAnnualBtn');
+
+      if (cycle === 'lifetime') {
+        lifetimeBtn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-action-600 text-white shadow-md transition cursor-pointer";
+        annualBtn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5 cursor-pointer";
+
+        document.getElementById('packOldPrice').textContent = "$49 USD";
+        document.getElementById('packCurrentPrice').textContent = "$29";
+        document.getElementById('packPeriodLabel').textContent = "USD / Pago único";
+
+        document.getElementById('suiteOldPrice').textContent = "$120 USD";
+        document.getElementById('suiteCurrentPrice').textContent = "$79";
+        document.getElementById('suitePeriodLabel').textContent = "USD / Pago único";
+      } else {
+        annualBtn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-action-600 text-white shadow-md transition flex items-center gap-1.5 cursor-pointer";
+        lifetimeBtn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-blue-200 hover:text-white transition cursor-pointer";
+
+        document.getElementById('packOldPrice').textContent = "$29 USD";
+        document.getElementById('packCurrentPrice').textContent = "$23";
+        document.getElementById('packPeriodLabel').textContent = "USD / Año (20% DTO)";
+
+        document.getElementById('suiteOldPrice').textContent = "$79 USD";
+        document.getElementById('suiteCurrentPrice').textContent = "$63";
+        document.getElementById('suitePeriodLabel').textContent = "USD / Año (20% DTO)";
+      }
+    }
+
+    function getPlanPrice(planKey) {
+      if (planKey === 'pack') return billingCycle === 'lifetime' ? 29 : 23;
+      if (planKey === 'suite') return billingCycle === 'lifetime' ? 79 : 63;
+      return 0;
+    }
+
+    function getPlanOldPrice(planKey) {
+      if (planKey === 'pack') return billingCycle === 'lifetime' ? 49 : 29;
+      if (planKey === 'suite') return billingCycle === 'lifetime' ? 120 : 79;
+      return 0;
+    }
+
+    // Modal Checkout y Cupones
+    function openCheckoutModal(planName, price, oldPrice) {
+      checkoutState = {
+        planName,
+        basePrice: price,
+        oldPrice: oldPrice,
+        finalPrice: price,
+        couponApplied: false
+      };
+
+      document.getElementById('checkoutFormState').classList.remove('hidden');
+      document.getElementById('checkoutSuccessState').classList.add('hidden');
+      document.getElementById('couponInput').value = '';
+      document.getElementById('couponFeedback').classList.add('hidden');
+
+      updateCheckoutUI();
+
+      const modal = document.getElementById('checkoutModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkoutModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function applyCoupon() {
+      const code = document.getElementById('couponInput').value.trim().toUpperCase();
+      const feedback = document.getElementById('couponFeedback');
+      feedback.classList.remove('hidden');
+
+      if (code === 'APLICADO20' || code === 'STEAM20') {
+        if (!checkoutState.couponApplied) {
+          checkoutState.finalPrice = Math.round(checkoutState.basePrice * 0.8);
+          checkoutState.couponApplied = true;
+        }
+        feedback.textContent = "✓ Cupón aplicado: 20% de descuento adicional activado.";
+        feedback.className = "text-xs mt-1.5 font-bold text-emerald-600 dark:text-emerald-400";
+        updateCheckoutUI();
+      } else {
+        feedback.textContent = "✕ Cupón no válido. Prueba con APLICADO20";
+        feedback.className = "text-xs mt-1.5 font-semibold text-rose-500";
+      }
+    }
+
+    function updateCheckoutUI() {
+      document.getElementById('checkoutPlanName').textContent = checkoutState.planName;
+      document.getElementById('checkoutOldPrice').textContent = `$${checkoutState.oldPrice}`;
+      document.getElementById('checkoutFinalPrice').textContent = `$${checkoutState.finalPrice} USD`;
+
+      const buyerName = document.getElementById('buyerNameInput').value || 'Cliente AplicadoED';
+      const subject = encodeURIComponent(`Solicitud de Licencia: ${checkoutState.planName}`);
+      const body = encodeURIComponent(
+        `Hola Jesús Eliécer,\n\nDeseo adquirir el siguiente paquete de AplicadoED Store:\n` +
+        `- Plan/App: ${checkoutState.planName}\n` +
+        `- Modalidad: ${billingCycle === 'lifetime' ? 'Pago Único / Vitalicia' : 'Suscripción Anual'}\n` +
+        `- Total a pagar: $${checkoutState.finalPrice} USD\n` +
+        `- Solicitante: ${buyerName}\n\nQuedo atento a los datos de pago y entrega.`
+      );
+      document.getElementById('checkoutMailtoBtn').href = `mailto:eliexergarcia@gmail.com?subject=${subject}&body=${body}`;
+    }
+
+    document.getElementById('buyerNameInput').addEventListener('input', updateCheckoutUI);
+
+    function confirmOrderInstant() {
+      const name = document.getElementById('buyerNameInput').value.trim();
+      const email = document.getElementById('buyerEmailInput').value.trim();
+
+      if (!name || !email) {
+        showToast("Por favor completa tu nombre y correo de entrega.");
+        return;
+      }
+
+      const refCode = `ED-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      document.getElementById('orderReferenceCode').textContent = `CÓDIGO DE ORDEN: ${refCode} • TOTAL: $${checkoutState.finalPrice} USD`;
+      document.getElementById('checkoutSuccessMsg').textContent =
+        `Gracias ${name}. Hemos preparado tu licencia para "${checkoutState.planName}" y enviado los detalles al correo ${email}.`;
+
+      document.getElementById('checkoutFormState').classList.add('hidden');
+      document.getElementById('checkoutSuccessState').classList.remove('hidden');
+      showToast("¡Solicitud de oferta registrada!");
+    }
+
+    // Gestión del Catálogo de Aplicaciones
+    function saveApps() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+      statTotalApps.textContent = apps.length;
+    }
+
+    function renderApps() {
+      const filtered = apps.filter(app => {
+        const matchesCat = currentCategory === 'Todas' || app.category === currentCategory;
+        const term = currentSearch.toLowerCase();
+        const matchesSearch =
+          app.name.toLowerCase().includes(term) ||
+          app.description.toLowerCase().includes(term) ||
+          app.platform.toLowerCase().includes(term) ||
+          app.category.toLowerCase().includes(term);
+        return matchesCat && matchesSearch;
+      });
+
+      visibleCount.textContent = filtered.length;
+      statTotalApps.textContent = apps.length;
+
+      if (filtered.length === 0) {
+        appsGrid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      appsGrid.innerHTML = filtered.map(app => `
+        <article class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 flex flex-col justify-between shadow-sm hover:shadow-xl hover:border-blue-400/60 dark:hover:border-blue-600/60">
+          <div>
+            <div class="flex items-start justify-between gap-3">
+              <div class="w-14 h-14 rounded-2xl bg-trust-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 flex items-center justify-center text-3xl shrink-0">
+                ${app.icon}
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60">
+                ✓ ${app.badge || 'Verificado'}
+              </span>
+            </div>
+
+            <div class="mt-4">
+              <div class="flex items-center gap-2 text-xs font-semibold text-blue-700 dark:text-blue-400">
+                <span>${app.category}</span>
+                <span class="text-slate-300 dark:text-slate-600">•</span>
+                <span class="text-slate-500 dark:text-slate-400">${app.version || 'v1.0'}</span>
+              </div>
+              <h3 class="text-lg font-extrabold text-slate-900 dark:text-white mt-1">${app.name}</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+                ${app.description}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
+            <div class="text-xs text-slate-500 dark:text-slate-400">
+              <span class="font-bold text-amber-500">★ ${app.rating || '4.9'}</span>
+              <span class="mx-1">•</span>
+              <span>${app.downloads || 100}+ descargas</span>
+            </div>
+
+            <button
+              onclick="openDetailModal(${app.id})"
+              class="px-4 py-2 rounded-xl bg-action-600 hover:bg-action-500 text-white text-xs font-bold tracking-wide shadow-sm transition cursor-pointer"
+            >
+              Obtener App
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Filtros por categoría
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-btn').forEach(b => {
+          b.className = 'cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer';
+        });
+        btn.className = 'cat-btn active px-4 py-2 rounded-xl text-sm font-semibold bg-trust-900 text-white dark:bg-blue-600 shadow-sm transition cursor-pointer';
+        currentCategory = btn.dataset.cat;
+        renderApps();
+      });
+    });
+
+    // Búsqueda en tiempo real
+    function handleSearch(e) {
+      currentSearch = e.target.value;
+      document.getElementById('searchInput').value = currentSearch;
+      document.getElementById('searchInputMobile').value = currentSearch;
+      renderApps();
+    }
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    document.getElementById('searchInputMobile').addEventListener('input', handleSearch);
+
+    function resetFilters() {
+      currentCategory = 'Todas';
+      currentSearch = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchInputMobile').value = '';
+      document.querySelectorAll('.cat-btn')[0].click();
+    }
+
+    // Modal de Detalle
+    function openDetailModal(id) {
+      const app = apps.find(a => a.id === id);
+      if (!app) return;
+      activeAppId = id;
+
+      document.getElementById('modalIcon').textContent = app.icon;
+      document.getElementById('modalCategory').textContent = app.category;
+      document.getElementById('modalTitle').textContent = app.name;
+      document.getElementById('modalPlatform').textContent = `${app.platform} • ${app.version || 'v1.0'}`;
+      document.getElementById('modalRating').textContent = `★ ${app.rating || '4.9'}`;
+      document.getElementById('modalDownloads').textContent = `${app.downloads || 100}+ descargas`;
+      document.getElementById('modalDescription').textContent = app.description;
+      document.getElementById('modalActionBtn').href = app.url;
+
+      const featuresList = document.getElementById('modalFeatures');
+      featuresList.innerHTML = (app.features || []).map(f => `
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-500 font-bold mt-0.5">✓</span>
+          <span>${f}</span>
+        </li>
+      `).join('');
+
+      const modal = document.getElementById('detailModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDetailModal() {
+      const modal = document.getElementById('detailModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function registerDownload() {
+      if (!activeAppId) return;
+      const app = apps.find(a => a.id === activeAppId);
+      if (app) {
+        app.downloads = (app.downloads || 100) + 1;
+        saveApps();
+        renderApps();
+        showToast(`Descarga iniciada para ${app.name}`);
+      }
+    }
+
+    // Modal Publicar App
+    function openPublishModal() {
+      const modal = document.getElementById('publishModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePublishModal() {
+      const modal = document.getElementById('publishModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    document.getElementById('publishForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newApp = {
+        id: Date.now(),
+        icon: document.getElementById('appIconInput').value || '🚀',
+        name: document.getElementById('appNameInput').value,
+        category: document.getElementById('appCatInput').value,
+        platform: document.getElementById('appPlatformInput').value,
+        version: 'v1.0',
+        rating: '5.0',
+        downloads: 1,
+        badge: 'Nuevo',
+        description: document.getElementById('appDescInput').value,
+        features: document.getElementById('appFeaturesInput').value.split(',').map(s => s.trim()).filter(Boolean),
+        url: document.getElementById('appUrlInput').value
+      };
+
+      apps.unshift(newApp);
+      saveApps();
+      renderApps();
+      e.target.reset();
+      closePublishModal();
+      switchView('catalog');
+      showToast(`¡"${newApp.name}" publicada en el catálogo!`);
+    });
+
+    function resetCatalogData() {
+      apps = [...DEFAULT_APPS];
+      saveApps();
+      renderApps();
+      showToast("Catálogo restaurado a su estado original");
+    }
+
+    // Toast Notification
+    let toastTimer;
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastText').textContent = message;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // Tema Claro / Oscuro
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('aplicadoed_theme', isDark ? 'dark' : 'light');
+    });
+
+    if (localStorage.getItem('aplicadoed_theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+
+    // Cerrar modales con Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDetailModal();
+        closePublishModal();
+        closeCheckoutModal();
+      }
+    });
+
+    // Inicializar tienda
+    renderApps();
+  </script>
+</body>
+</html>
