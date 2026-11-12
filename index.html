@@ -1,16 +1,417 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi PLE - AplicadoED</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f9; color: #333; }
-        h1 { color: #0066cc; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AplicadoED Store — Software Educativo, Offline e IoT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            trust: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              600: '#2563eb',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            action: {
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .card-hover {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+    }
+  </style>
 </head>
-<body>
-    <h1>¡Bienvenido a mi PLE!</h1>
-    <p>Página alternativa para la difusión de mi PLE en marcha con GitHub Pages.</p>
-</body>
-</html>
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0B1120] dark:text-slate-100 min-h-screen transition-colors duration-200 flex flex-col">
+
+  <!-- Barra de navegación (30% Azul Confianza) -->
+  <header class="sticky top-0 z-40 bg-trust-900 dark:bg-slate-900/95 text-white border-b border-trust-800 dark:border-slate-800 backdrop-blur-md shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-extrabold text-lg shadow-inner">
+          ED
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight block leading-none">AplicadoED <span class="text-orange-400">Store</span></span>
+          <span class="text-[11px] text-blue-200 tracking-wide">Ecosistema Offline, STEAM &amp; IoT</span>
+        </div>
+      </div>
+
+      <!-- Buscador Central -->
+      <div class="hidden md:flex flex-1 max-w-md relative">
+        <svg class="w-4 h-4 text-blue-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Buscar apps, APK, robótica, domótica..."
+          class="w-full pl-10 pr-4 py-2 rounded-xl bg-trust-800/80 dark:bg-slate-800 text-sm text-white placeholder-blue-300 border border-blue-700/50 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        />
+      </div>
+
+      <!-- Controles de Acción -->
+      <div class="flex items-center gap-2.5">
+        <button
+          id="themeToggle"
+          title="Cambiar tema claro/oscuro"
+          class="p-2.5 rounded-xl bg-trust-800 dark:bg-slate-800 hover:bg-blue-700 dark:hover:bg-slate-700 text-blue-100 transition"
+        >
+          <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+        </button>
+
+        <!-- Botón CTA 10% Naranja Conversión -->
+        <button
+          onclick="openPublishModal()"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 active:bg-action-700 text-white font-semibold text-sm shadow-md shadow-orange-950/30 transition cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>Publicar App</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner (Azul Confianza + Prueba Social UX) -->
+  <section class="bg-gradient-to-br from-trust-900 via-blue-900 to-slate-900 text-white border-b border-blue-800/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div class="max-w-2xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-800/70 border border-blue-600/40 text-xs font-medium text-blue-200 mb-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Software verificado • Arquitectura resiliente sin dependencia de nube
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            Herramientas digitales diseñadas para <span class="text-orange-400">funcionar siempre</span>.
+          </h1>
+          <p class="mt-3 text-blue-100/90 text-base sm:text-lg leading-relaxed">
+            Catálogo oficial de aplicaciones educativas STEAM, redes de comunicación P2P, administración local y automatización domótica desarrolladas por Eliecer García.
+          </p>
+        </div>
+
+        <!-- Métricas de Confianza -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 bg-white/5 backdrop-blur-sm border border-white/10 p-4 rounded-2xl shrink-0">
+          <div class="text-center px-2">
+            <div id="statTotalApps" class="text-2xl sm:text-3xl font-extrabold text-white">6</div>
+            <div class="text-xs text-blue-200 mt-0.5">Apps Activas</div>
+          </div>
+          <div class="text-center px-2 border-x border-white/10">
+            <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</div>
+            <div class="text-xs text-blue-200 mt-0.5">Offline Ready</div>
+          </div>
+          <div class="text-center px-2">
+            <div class="text-2xl sm:text-3xl font-extrabold text-orange-400">4.9★</div>
+            <div class="text-xs text-blue-200 mt-0.5">Valoración</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buscador móvil -->
+      <div class="mt-6 md:hidden relative">
+        <svg class="w-4 h-4 text-blue-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          id="searchInputMobile"
+          type="text"
+          placeholder="Buscar aplicaciones..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-trust-800/90 text-sm text-white placeholder-blue-300 border border-blue-700/50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido Principal (60% Neutro Respirable) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <!-- Filtros por Categoría -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div id="categoryFilters" class="flex flex-wrap gap-2">
+        <button data-cat="Todas" class="cat-btn active px-4 py-2 rounded-xl text-sm font-semibold bg-trust-900 text-white dark:bg-blue-600 shadow-sm transition cursor-pointer">
+          Todas
+        </button>
+        <button data-cat="Educación STEAM" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+          Educación STEAM
+        </button>
+        <button data-cat="Offline & P2P" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+          Offline &amp; P2P
+        </button>
+        <button data-cat="Gestión Local" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+          Gestión Local
+        </button>
+        <button data-cat="Domótica & IoT" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition cursor-pointer">
+          Domótica &amp; IoT
+        </button>
+      </div>
+
+      <div class="text-xs text-slate-500 dark:text-slate-400">
+        Mostrando <span id="visibleCount" class="font-bold text-slate-800 dark:text-slate-200">6</span> aplicaciones disponibles
+      </div>
+    </div>
+
+    <!-- Cuadrícula de Aplicaciones -->
+    <div id="appsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Renderizado dinámicamente por JavaScript -->
+    </div>
+
+    <!-- Estado vacío si no hay resultados -->
+    <div id="emptyState" class="hidden text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+      <div class="text-4xl mb-3">🔍</div>
+      <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">No se encontraron aplicaciones</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Intenta con otro término de búsqueda o cambia la categoría.</p>
+      <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-trust-900 text-white text-sm font-semibold hover:bg-blue-800 transition cursor-pointer">
+        Ver todo el catálogo
+      </button>
+    </div>
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
+      <div>
+        <strong class="text-slate-800 dark:text-slate-200">AplicadoED Store</strong> — Desarrollado por Jesús Eliécer García Hernández
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="mailto:eliexergarcia@gmail.com" class="hover:text-blue-600 dark:hover:text-blue-400 transition">eliexergarcia@gmail.com</a>
+        <span>•</span>
+        <button onclick="resetCatalogData()" class="text-xs underline hover:text-orange-600 transition cursor-pointer">Restaurar catálogo base</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: Ficha Técnica de Aplicación -->
+  <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl animate-fadeIn">
+      <div id="modalHeaderBanner" class="h-28 bg-gradient-to-r from-trust-900 to-blue-700 p-6 flex items-end justify-between relative">
+        <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition cursor-pointer">
+          ✕
+        </button>
+        <div class="flex items-center gap-4 translate-y-6">
+          <div id="modalIcon" class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 shadow-lg flex items-center justify-center text-3xl border border-slate-100 dark:border-slate-700">
+            📱
+          </div>
+          <div class="pb-1">
+            <span id="modalCategory" class="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-orange-500 text-white">
+              Categoría
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 pt-9">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="modalTitle" class="text-2xl font-extrabold text-slate-900 dark:text-white">Nombre App</h2>
+            <p id="modalPlatform" class="text-xs font-medium text-blue-600 dark:text-blue-400 mt-0.5">Android APK • v1.0</p>
+          </div>
+          <div class="text-right">
+            <div id="modalRating" class="text-sm font-bold text-amber-500">★ 4.9</div>
+            <div id="modalDownloads" class="text-xs text-slate-400">120+ descargas</div>
+          </div>
+        </div>
+
+        <p id="modalDescription" class="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Descripción detallada.
+        </p>
+
+        <div class="mt-5">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Características Clave</h4>
+          <ul id="modalFeatures" class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+          </ul>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <button onclick="closeDetailModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+            Cerrar
+          </button>
+          <a id="modalActionBtn" href="#" target="_blank" rel="noopener noreferrer" onclick="registerDownload()" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-action-600 hover:bg-action-500 text-white font-bold text-sm shadow-lg shadow-orange-600/20 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            <span id="modalActionText">Descargar / Abrir App</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Publicar Nueva App -->
+  <div id="publishModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Publicar Nueva Aplicación</h3>
+        <button onclick="closePublishModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <form id="publishForm" class="mt-4 space-y-4">
+        <div class="grid grid-cols-4 gap-3">
+          <div class="col-span-1">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Icono</label>
+            <input id="appIconInput" type="text" value="🚀" maxlength="4" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center text-lg" />
+          </div>
+          <div class="col-span-3">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre de la App</label>
+            <input id="appNameInput" type="text" placeholder="Ej: EduBot Control v2" required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Categoría</label>
+            <select id="appCatInput" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+              <option value="Educación STEAM">Educación STEAM</option>
+              <option value="Offline & P2P">Offline &amp; P2P</option>
+              <option value="Gestión Local">Gestión Local</option>
+              <option value="Domótica & IoT">Domótica &amp; IoT</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Plataforma / Formato</label>
+            <input id="appPlatformInput" type="text" placeholder="Ej: Android APK • 14 MB" required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Descripción breve</label>
+          <textarea id="appDescInput" rows="2" placeholder="Explica qué problema resuelve tu aplicación..." required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Características (separadas por coma)</label>
+          <input id="appFeaturesInput" type="text" placeholder="Funciona sin internet, Exporta PDF, Bajo consumo" required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Enlace de descarga o repositorio GitHub</label>
+          <input id="appUrlInput" type="url" placeholder="https://github.com/aplicadoed-ops/..." required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" />
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" onclick="closePublishModal()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-action-600 hover:bg-action-500 text-white font-bold text-sm shadow-md cursor-pointer">Guardar en Tienda</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Catálogo base con los proyectos desarrollados
+    const DEFAULT_APPS = [
+      {
+        id: 1,
+        icon: "🏢",
+        name: "CondoAdmin Local",
+        category: "Gestión Local",
+        platform: "Web App Offline • LocalStorage",
+        version: "v2.4",
+        rating: "4.9",
+        downloads: 340,
+        badge: "Sin Servidor",
+        description: "Sistema integral de administración de condominios diseñado para operar 100% de forma local sin depender de servidores externos ni cuotas mensuales.",
+        features: [
+          "Registro de activos y gastos fijos (incluyendo servicio de agua)",
+          "Cálculo automático de alícuotas y distribución mensual",
+          "Persistencia segura mediante LocalStorage y respaldo JSON"
+        ],
+        url: "https://github.com/aplicadoed-ops"
+      },
+      {
+        id: 2,
+        icon: "📡",
+        name: "MeshChat P2P",
+        category: "Offline & P2P",
+        platform: "Android APK • Kotlin / Room",
+        version: "v1.8",
+        rating: "5.0",
+        downloads: 510,
+        badge: "Cero Internet",
+        description: "Mensajería descentralizada punto a punto mediante red de malla (Mesh), fragmentación de paquetes y almacenamiento local en dispositivos Android.",
+        features: [
+          "Comunicación directa sin torres celulares ni Wi-Fi router",
+          "Fragmentación inteligente de paquetes (Packet Chunking)",
+          "Historial persistente con base de datos Room"
+        ],
+        url: "https://github.com/aplicadoed-ops"
+      },
+      {
+        id: 3,
+        icon: "🤖",
+        name: "RoboTrack STEAM",
+        category: "Educación STEAM",
+        platform: "Android / Web • WeDo 2.0 & micro:bit",
+        version: "v3.1",
+        rating: "4.9",
+        downloads: 620,
+        badge: "Educativo",
+        description: "Módulos curriculares interactivos de robótica educativa para niños con guías paso a paso, retroalimentación por voz y retos con LEGO WeDo 2.0 y micro:bit.",
+        features: [
+          "Instrucciones guiadas por voz integrada para niños",
+          "Proyectos prácticos con sensores ultrasónicos y motores",
+          "Diseñado bajo estándares pedagógicos STEAM"
+        ],
+        url: "https://github.com/aplicadoed-ops"
+      },
+      {
+        id: 4,
+        icon: "🏠",
+        name: "DomoControl Zigbee",
+        category: "Domótica & IoT",
+        platform: "ESP32 / Zigbee Local Hub",
+        version: "v1.5",
+        rating: "4.8",
+        downloads: 290,
+        badge: "Resiliente",
+        description: "Panel de control domótico resiliente a cortes de internet para gestión de iluminación automatizada, sensores de seguridad y relés con protocolo Zigbee y ESP32.",
+        features: [
+          "Operación local garantizada ante fallos de conectividad",
+          "Automatización de portones y sensores ultrasónicos",
+          "Bajo consumo energético con microcontroladores ESP32"
+        ],
+        url: "https://github.com/aplicadoed-ops"
+      },
+      {
+        id: 5,
+        icon: "🎮",
+        name: "PyGame EduPack APK",
+        category: "Educación STEAM",
+        platform: "Android APK • Python / Buildozer",
+        version: "v2.0",
+        rating: "4.8",
+        downloads: 415,
+        badge: "Juegos Didácticos",
+        description: "Colección de videojuegos educativos desarrollados en Python y compilados nativamente para Android para reforzar lógica matemática y secuencias.",
+        features: [
+          "Controles táctiles optimizados para pantallas móviles",
+          "Sin anuncios ni compras integradas",
+          "Ideal para aulas de informática y tablets educativas"
+        ],
+        url: "https://github.com/aplicadoed-ops"
+      },
+      {
+        id: 6,
